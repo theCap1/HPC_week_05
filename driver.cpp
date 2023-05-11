@@ -42,7 +42,7 @@ int main(){
         *(io_c+i) = i;
     }
 
-    // gemm_asm_asimd_16_6_1(i_a, i_b, io_c); // dry run
+    gemm_asm_asimd_16_6_1(i_a, i_b, io_c); // dry run
     l_tp0 = std::chrono::steady_clock::now();
     for (uint64_t i = 0; i < l_n_repetitions; i++)
     {

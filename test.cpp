@@ -13,7 +13,7 @@ int main(){
 
     int64_t i_m = 16;
     int64_t i_n = 6;
-    int64_t i_k = 1;
+    int64_t i_k = 3;
 
     // DTYPE a[16] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
     // DTYPE b[6] = {1,2,3,4,5,6};
@@ -22,8 +22,6 @@ int main(){
     DTYPE *a = (DTYPE*) malloc(i_m*i_k*sizeof(DTYPE));
     DTYPE *b = (DTYPE*) malloc(i_k*i_n*sizeof(DTYPE));
     DTYPE *c = (DTYPE*) malloc(i_m*i_n*sizeof(DTYPE));
-
-    std::cout << "size of DTYPE is " << sizeof(DTYPE) << " and size of float is " << sizeof(float) << std::endl;
 
     for (int i = 0; i < i_k*i_m; i++)
     {
@@ -60,6 +58,26 @@ int main(){
         printf("\n");
     }
 
+    DTYPE *b_transposed = (DTYPE*) malloc(i_k*i_n*sizeof(DTYPE));
+    // std::cout << "\nTranspose of Matrix c:\n";
+    for(int r=0; r<i_k; r++)    // i_k rows = 16
+    {
+        for(int col=0; col<i_n; col++)  // i_n columns = 6
+        {
+            *(b_transposed + col + r * i_n) = *(b + col * i_k + r);
+        }
+    }
+
+    std::cout << "\nTransbposed Matrix B:\n";
+    for(int c=0; c<i_n; c++)
+    {
+        for(int r=0; r<i_k; r++)
+        {
+            std::cout << *(b_transposed +r*i_n + c) << " ";
+        }
+        printf("\n");
+    }
+
     std::cout << "\nMatrix C:\n";
     for(int col=0; col<i_m; col++)
     {
@@ -70,13 +88,13 @@ int main(){
         printf("\n");
     }
 
-    DTYPE *transposed = (DTYPE*) malloc(i_m*i_n*sizeof(DTYPE));
+    DTYPE *c_transposed = (DTYPE*) malloc(i_m*i_n*sizeof(DTYPE));
     // std::cout << "\nTranspose of Matrix c:\n";
     for(int r=0; r<i_m; r++)    // i_m rows = 16
     {
         for(int col=0; col<i_n; col++)  // i_n columns = 6
         {
-            *(transposed + col + r * i_n) = *(c + col * i_m + r);
+            *(c_transposed + col + r * i_n) = *(c + col * i_m + r);
         }
     }
 
@@ -90,7 +108,7 @@ int main(){
     // }
 
     std::cout << "\nRetransposed FMA C+=A*B is:\n";
-    gemm_asm_asimd_16_6_1(a,b,c);
+    gemm_asm_asimd_16_6_1(a,b_transposed,c);
     // for(int r=0; r<i_m; r++)    // i_m rows = 16
     // {
     //     for(int col=0; col<i_n; col++)  // i_n columns = 6
@@ -112,5 +130,6 @@ int main(){
     free(a);
     free(b);
     free(c);
-    free(transposed);
+    free(c_transposed);
+    free(b_transposed);
 }
