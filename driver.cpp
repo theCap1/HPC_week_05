@@ -1,5 +1,6 @@
 #include <iostream>
 #include <chrono>
+#include <cstdint>
 
 #define DTYPE float
 
@@ -9,7 +10,7 @@ extern "C" {
                                 DTYPE       * io_c );
 }
 
-int main(int argc, char* argv[]){
+int main(){
     int64_t i_m = 16;
     int64_t i_n = 6;
     int64_t i_k = 1;
@@ -19,8 +20,8 @@ int main(int argc, char* argv[]){
     std::chrono::duration< double > l_dur;
     double l_g_flops = 0;
     int l_n_threads = 1;
-    uint64_t l_n_repetitions = 5;
-    l_n_repetitions *= 1000000;
+    uint64_t l_n_repetitions = 15;
+    l_n_repetitions *= 10000000;
 
     DTYPE *i_a = (DTYPE*) malloc(i_m*i_k*sizeof(DTYPE));
     DTYPE *i_b = (DTYPE*) malloc(i_k*i_n*sizeof(DTYPE));
@@ -38,10 +39,10 @@ int main(int argc, char* argv[]){
 
     for (int i = 0; i < i_m*i_n; i++)
     {
-        *(io_c+i) = 1;
+        *(io_c+i) = i;
     }
 
-    gemm_asm_asimd_16_6_1(i_a, i_b, io_c); // dry run
+    // gemm_asm_asimd_16_6_1(i_a, i_b, io_c); // dry run
     l_tp0 = std::chrono::steady_clock::now();
     for (uint64_t i = 0; i < l_n_repetitions; i++)
     {
@@ -51,9 +52,10 @@ int main(int argc, char* argv[]){
 
     l_dur = std::chrono::duration_cast< std::chrono::duration< double> >( l_tp1 - l_tp0 );
 
+    std::cout << "  # of executions: " << l_n_repetitions << std::endl;
     std::cout << "  duration: " << l_dur.count() << " seconds" << std::endl;
     std::cout << "  average duration: " << l_dur.count()/l_n_repetitions << " seconds" << std::endl;
-    l_g_flops = i_m*i_n*(i_k*i_k+1);
+    l_g_flops = 2*i_m*i_n*i_k;
     l_g_flops *= l_n_threads;
     l_g_flops *= l_n_repetitions;
     l_g_flops *= 1.0E-9;
