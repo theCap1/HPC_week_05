@@ -13,11 +13,11 @@ One optimization that happend later on was to use only non-callee safed register
 
 Team  | Time [s] | # of executions | FP32 GFLOPs | peak [%]
 ------------- | ------------- | ------------- | ------------- | -------------
-Neo | 0.925682 | 150000000 | 31.1122 | 48.613
+Mr. Anderson | 0.925682 | 150000000 | 31.1122 | 48.613
 
 ##### 6.2.3 Loop over k
 The loop over k was realized in `k_loop_gemm_asm_asimd_16_6_1.s`. It is a little strange that the performance maxes out again at around 31.1 GFLOPs. It was supposed to increase but since the programm really only loops around the same code from 6.2.2 with very little adaptation this could be expected.
 
 Team  | Time [s] | # of executions | FP32 GFLOPs | peak [%]
 ------------- | ------------- | ------------- | ------------- | -------------
-Neo | 44.4806 | 150000000 | 31.0787 | 48.605
+Mr. Anderson | 44.4806 | 150000000 | 31.0787 | 48.605
